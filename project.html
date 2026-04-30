@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proje Detayı | Portfolyo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Project Detail Specific Styles */
+        .project-detail-hero {
+            padding-top: clamp(180px, 22vh, 280px); /* Increased to lower content */
+            padding-bottom: 60px;
+            text-align: center;
+        }
+
+        .project-meta-top {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 80px; /* More space before the gallery */
+        }
+
+        .project-category-year {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+
+        .project-year {
+            opacity: 0.5;
+        }
+
+        .project-detail-title {
+            font-size: clamp(2rem, 4.5vw, 4.2rem); /* Matches index.html hero h1 */
+            line-height: 1.1;
+            font-weight: 400; /* Thinner weight to match homepage */
+            letter-spacing: -2px;
+            margin: 0;
+            max-width: 1000px;
+        }
+
+        .project-description-text {
+            font-size: 1rem;
+            line-height: 1.6;
+            font-weight: 400;
+            max-width: 750px;
+            color: var(--text-secondary);
+            margin: 0 auto;
+        }
+
+        .hero-desc {
+            margin-top: 24px;
+        }
+
+        .bottom-meta {
+            margin-top: 16px; /* Reduced distance to description */
+        }
+
+        .project-hero-image-container {
+            width: 100%;
+            max-width: 700px; /* Reduced for portrait balance */
+            aspect-ratio: 1080 / 1350; 
+            border-radius: 0;
+            overflow: hidden;
+            margin: 0 auto 16px; /* Significantly reduced gap */
+            background: var(--card-bg);
+        }
+
+        .project-hero-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .project-content-grid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 60px;
+            text-align: center;
+            padding: 0 var(--side-padding);
+        }
+
+        .project-info-sidebar {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            width: 100%;
+        }
+
+        .info-group h4 {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .info-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px 24px;
+        }
+
+        .info-list li {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .project-description-text {
+            font-size: 1rem;
+            line-height: 1.6;
+            font-weight: 400;
+            max-width: 750px;
+            color: var(--text-secondary);
+            margin: 0 auto;
+        }
+
+        /* Gallery 1-2-1-2 Grid Layout */
+        .project-gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px; /* Biraz daha ferah bir boşluk */
+            margin: 0 auto 80px;
+            max-width: 1200px; 
+            width: calc(100% - (var(--side-padding) * 2));
+        }
+
+        .gallery-item {
+            width: 100%;
+            border-radius: 0;
+            overflow: hidden;
+            background: var(--card-bg);
+            position: relative;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gallery-item {
+            grid-column: span 1;
+            aspect-ratio: 1080 / 1350;
+            cursor: zoom-in; /* Indicate clickable for lightbox */
+        }
+
+        /* Lightbox Styles */
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            cursor: zoom-out;
+        }
+
+        .lightbox.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .lightbox-content {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            cursor: default;
+            max-width: none;
+            max-height: none;
+        }
+
+        .lightbox-content img {
+            width: auto;
+            height: 100vh;
+            aspect-ratio: 1080 / 1350;
+            object-fit: cover;
+            user-select: none;
+            border-radius: 0;
+            margin: 0;
+            display: block;
+            box-shadow: 0 0 100px rgba(0,0,0,0.8);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 2020;
+            padding: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .lightbox-close:hover {
+            transform: rotate(90deg);
+        }
+
+        .lightbox-prev, .lightbox-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1.5rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 2020;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .lightbox-prev:hover, .lightbox-next:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: white;
+        }
+
+        .lightbox-prev { left: calc(50% - 40vh - 100px); }
+        .lightbox-next { right: calc(50% - 40vh - 100px); }
+
+        .lightbox-dots {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 2020;
+            align-items: center;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: #fff;
+            transform: scale(1.4);
+        }
+
+        @media (max-width: 1100px) {
+            .lightbox-prev { left: 20px; }
+            .lightbox-next { right: 20px; }
+        }
+
+        @media (max-width: 768px) {
+            .lightbox-content img { 
+                width: 100vw;
+                height: auto;
+                aspect-ratio: 1080 / 1350;
+            }
+            .lightbox-prev, .lightbox-next {
+                width: 50px;
+                height: 50px;
+                bottom: 40px;
+                top: auto;
+                transform: none;
+            }
+            .lightbox-prev { left: 15%; }
+            .lightbox-next { right: 15%; }
+            .lightbox-close { top: 20px; right: 20px; }
+            .lightbox-dots { bottom: 62px; } /* Aligned vertically with 50px buttons */
+        }
+
+        /* Project Pagination Section - Exact Service Style */
+        .project-pagination-section {
+            padding: 120px 0;
+        }
+
+        .pagination-container {
+            display: flex;
+            width: 100%;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .pagination-item {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 40px;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+            position: relative;
+            background: transparent;
+            overflow: hidden;
+        }
+
+        .pagination-item:hover {
+            background: var(--btn-secondary-hover);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+        }
+
+        .pagination-item.prev {
+            border-right: 1px solid var(--border-color);
+        }
+
+        .pagination-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 12px;
+            transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+        }
+
+        .pagination-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.25em;
+            color: rgba(255, 255, 255, 0.3); /* Dimmed default */
+            font-weight: 600;
+            transition: color 0.4s ease;
+        }
+
+        .pagination-title {
+            font-size: clamp(1.4rem, 3vw, 2.5rem);
+            font-weight: 400;
+            color: var(--text-muted); /* Dimmed default like services */
+            letter-spacing: -1.5px;
+            margin: 0;
+            transition: color 0.4s ease;
+        }
+
+        .pagination-arrow {
+            font-size: 32px;
+            color: rgba(255, 255, 255, 0.15); /* Very dimmed default */
+            transition: all 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+        }
+
+        .pagination-item.prev .pagination-arrow {
+            left: 60px;
+        }
+
+        .pagination-item.next .pagination-arrow {
+            right: 60px;
+        }
+
+        /* Hover States - Active Colors */
+        .pagination-item:hover .pagination-title {
+            color: var(--text-primary);
+        }
+
+        .pagination-item:hover .pagination-label {
+            color: var(--text-primary);
+            opacity: 0.8;
+        }
+
+        .pagination-item:hover .pagination-arrow {
+            color: var(--text-primary);
+            opacity: 1;
+        }
+
+        /* Arrow Animations */
+        .pagination-item.prev:hover .pagination-arrow {
+            transform: translateY(-50%) translateX(-15px);
+        }
+
+        .pagination-item.next:hover .pagination-arrow {
+            transform: translateY(-50%) translateX(15px);
+        }
+
+        /* Light Theme Overrides for Pagination */
+        [data-theme="light"] .pagination-label {
+            color: rgba(0, 0, 0, 0.3);
+        }
+        [data-theme="light"] .pagination-title {
+            color: rgba(0, 0, 0, 0.4);
+        }
+        [data-theme="light"] .pagination-arrow {
+            color: rgba(0, 0, 0, 0.15);
+        }
+        [data-theme="light"] .pagination-item:hover .pagination-title,
+        [data-theme="light"] .pagination-item:hover .pagination-label,
+        [data-theme="light"] .pagination-item:hover .pagination-arrow {
+            color: var(--text-primary);
+        }
+
+        @media (max-width: 992px) {
+            .pagination-container {
+                flex-direction: column;
+            }
+            .pagination-item {
+                padding: 50px 20px;
+            }
+            .pagination-item.prev {
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+            .pagination-arrow {
+                font-size: 24px;
+            }
+            .pagination-item.prev .pagination-arrow { left: 20px; }
+            .pagination-item.next .pagination-arrow { right: 20px; }
+        }
+
+        /* Mobile Gallery Fix */
+        @media (max-width: 768px) {
+            .project-gallery {
+                grid-template-columns: 1fr; /* Tek sütun */
+                gap: 24px; /* Mobilde daha belirgin boşluk */
+                width: 100% !important; /* Kapak fotoğrafı ile aynı hizaya getirildi */
+            }
+
+            .gallery-item.large, 
+            .gallery-item.small {
+                grid-column: span 1; /* Herkes tam genişlik */
+                width: 100%;
+            }
+
+            .project-detail-hero {
+                padding-top: 150px;
+            }
+
+            .project-gallery {
+                margin-bottom: 40px !important;
+            }
+
+            .project-pagination-section {
+                padding: 0 0 120px 0 !important;
+            }
+        }
+
+        /* 404 State */
+        .error-state {
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- WebGL Fluid Animasyon Kanvası -->
+    <canvas id="fluid-canvas"></canvas>
+
+    <nav id="navbar" class="nav-scrolled">
+        <div class="container nav-container">
+            <div class="nav-left">
+                <a href="index.html" class="logo">
+                    <img src="assets/icons/logo.svg" alt="Logo" width="32" height="32">
+                </a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html#home" data-i18n="navHome">Ana Sayfa</a></li>
+                <!-- <li><a href="index.html#services" data-i18n="navServices">Hizmetler</a></li> -->
+                <li><a href="index.html#projects" data-i18n="navPortfolio">Portfolyo</a></li>
+                <li><a href="index.html#contact" data-i18n="navContact">İletişim</a></li>
+            </ul>
+            <div class="nav-right">
+                <div class="desktop-controls">
+                    <div class="lang-switch-container">
+                        <input type="checkbox" id="lang-switch" class="lang-switch-checkbox">
+                        <label for="lang-switch" class="lang-switch-pill">
+                            <span class="lang-slider-bg"></span>
+                            <span class="lang-text-inside tr-text">TR</span>
+                            <span class="lang-text-inside en-text">EN</span>
+                        </label>
+                    </div>
+                </div>
+                <button id="menu-toggle" class="menu-toggle" aria-label="Menü">
+                    <span class="menu-bar"></span>
+                    <span class="menu-bar"></span>
+                </button>
+            </div>
+        </div>
+
+        <div id="mobile-menu" class="mobile-menu">
+            <div class="mobile-menu-header">
+                <div class="logo">
+                    <img src="assets/icons/logo.svg" alt="Logo" width="32" height="32">
+                </div>
+            </div>
+            <div class="mobile-menu-inner">
+                <ul class="mobile-nav-links">
+                    <li><a href="index.html#home" data-i18n="navHome"><span>Ana Sayfa</span></a></li>
+                    <!-- <li><a href="index.html#services" data-i18n="navServices"><span>Hizmetler</span></a></li> -->
+                    <li><a href="index.html#projects" data-i18n="navPortfolio"><span>Portfolyo</span></a></li>
+                    <li><a href="index.html#contact" data-i18n="navContact"><span>İletişim</span></a></li>
+                </ul>
+            </div>
+            <div class="mobile-menu-controls">
+                <button id="theme-toggle-mobile" class="theme-toggle-mobile">
+                    <i class="ph ph-moon"></i>
+                </button>
+                <div class="lang-switch-container">
+                    <input type="checkbox" id="lang-switch-mobile" class="lang-switch-checkbox">
+                    <label for="lang-switch-mobile" class="lang-switch-pill">
+                        <span class="lang-slider-bg"></span>
+                        <span class="lang-text-inside tr-text">TR</span>
+                        <span class="lang-text-inside en-text">EN</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main id="project-detail-content">
+        <section class="project-detail-hero">
+            <div class="container">
+                <div class="project-meta-top">
+                    <h1 id="p-title" class="project-detail-title fade-in">Project Title</h1>
+                    <p id="p-description" class="project-description-text hero-desc fade-in delay-1">
+                        <!-- Description injected here -->
+                    </p>
+                    <div class="project-category-year bottom-meta fade-in delay-2">
+                        <span id="p-category">Brand Identity</span>
+                    </div>
+                </div>
+
+
+
+                <div id="p-gallery" class="project-gallery">
+                    <!-- Gallery images will be injected here -->
+                </div>
+            </div>
+        </section>
+
+        <section class="project-pagination-section">
+            <div class="container">
+                <div class="pagination-container">
+                    <a href="javascript:void(0)" id="prev-project-link" class="pagination-item prev">
+                        <div class="pagination-arrow"><i class="ph ph-arrow-left"></i></div>
+                        <div class="pagination-content">
+                            <span class="pagination-label" data-i18n="prevProject">ÖNCEKİ PROJE</span>
+                            <h3 id="prev-project-title" class="pagination-title">Daymak Motion</h3>
+                        </div>
+                    </a>
+                    <a href="javascript:void(0)" id="next-project-link" class="pagination-item next">
+                        <div class="pagination-content">
+                            <span class="pagination-label" data-i18n="nextProject">SIRADAKİ PROJE</span>
+                            <h3 id="next-project-title" class="pagination-title">Freshman Brand</h3>
+                        </div>
+                        <div class="pagination-arrow"><i class="ph ph-arrow-right"></i></div>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container footer-container">
+            <p data-i18n="footerText">&copy; Created by Fırat Kuşaslan - 2026 | Tüm hakları saklıdır.</p>
+            <div class="footer-links">
+                <a href="https://www.facebook.com/firatbuzz/" target="_blank">Facebook</a>
+                <span class="divider">|</span>
+                <a href="https://www.instagram.com/firatbuzz/" target="_blank">Instagram</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Fixed Action Buttons -->
+    <button id="theme-toggle-btn" class="theme-toggle" aria-label="Toggle Theme">
+        <i class="ph ph-moon"></i>
+    </button>
+    <button id="scroll-top-btn" class="scroll-top-btn" aria-label="Yukarı Çık">
+        <i class="ph ph-arrow-up"></i>
+    </button>
+    <!-- WhatsApp Button -->
+    <a href="https://wa.me/905323871204?text=Merhaba%2C%20websitenizi%20inceledim.%20Projem%20hakk%C4%B1nda%20g%C3%B6r%C3%BC%C5%9Fmek%20istiyorum.%20M%C3%BCsait%20misiniz%3F"
+        target="_blank" id="whatsapp-btn" class="whatsapp-btn" aria-label="WhatsApp İletişim">
+        <i class="ph-thin ph-whatsapp-logo"></i>
+    </a>
+
+    <!-- Dependencies -->
+    <script>window.ga = function () { };</script>
+    <div style="display:none;">
+        <div class="promo"></div>
+        <div class="promo-close"></div>
+        <div id="apple_link"></div>
+        <div id="google_link"></div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
+    <script src="js/fluid.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    
+    <!-- Project Data and Logic -->
+    <!-- Lightbox Modal -->
+    <div id="lightbox" class="lightbox">
+        <button class="lightbox-close" aria-label="Close"><i class="ph ph-x"></i></button>
+        <button class="lightbox-prev" aria-label="Previous"><i class="ph ph-caret-left"></i></button>
+        <div class="lightbox-content">
+            <img id="lightbox-img" src="" alt="Full Screen Project Image">
+        </div>
+        <button class="lightbox-next" aria-label="Next"><i class="ph ph-caret-right"></i></button>
+        <div id="lightbox-dots" class="lightbox-dots"></div>
+    </div>
+
+    <script src="js/projects-data.js"></script>
+    <script src="js/script.js"></script> <!-- Reusing existing i18n/theme logic -->
+    
+    <script>
+        // Project Detail Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const slug = urlParams.get('s');
+            
+            const project = getProjectBySlug(slug);
+            
+            if (!project) {
+                // If project not found, redirect to home or show error
+                document.getElementById('project-detail-content').innerHTML = `
+                    <div class="container error-state">
+                        <h1 style="font-size: 80px;">404</h1>
+                        <p>Proje bulunamadı.</p>
+                        <a href="index.html" class="hero-btn primary">Ana Sayfaya Dön</a>
+                    </div>
+                `;
+                return;
+            }
+
+            // Populate Content
+            function updateProjectContent(lang) {
+                document.title = `${project.title} | Fırat Kuşaslan`;
+                
+                const pTitle = document.getElementById('p-title');
+                const pCategory = document.getElementById('p-category');
+                const pDesc = document.getElementById('p-description');
+
+                if (pTitle) pTitle.innerText = project.title;
+                if (pCategory) pCategory.innerText = project.category[lang];
+                if (pDesc) pDesc.innerText = project.description[lang];
+                
+                // Gallery Injection Logic (Simple 3-column grid)
+                const gallery = document.getElementById('p-gallery');
+                if (gallery) {
+                    let galleryHTML = '';
+
+                    project.images.forEach((img, index) => {
+                        // İlk 3 görsel yumuşak gelsin diye fade-in + delay ekliyoruz
+                        // Diğerleri scroll ile (reveal) gelecek.
+                        let revealClass = 'reveal';
+                        let style = '';
+                        
+                        if (index < 3) {
+                            revealClass = 'fade-in';
+                            style = `style="animation-delay: ${0.6 + (index * 0.1)}s;"`;
+                        }
+                        
+                        galleryHTML += `
+                            <div class="gallery-item ${revealClass}" ${style}>
+                                <img src="${img}" alt="${project.title}">
+                            </div>
+                        `;
+                    });
+                    gallery.innerHTML = galleryHTML;
+
+                    // Lightbox Image List
+                    allProjectImages = [...project.images];
+                    
+                    // Click Listeners
+                    setTimeout(() => {
+                        const items = gallery.querySelectorAll('.gallery-item');
+                        items.forEach((item, index) => {
+                            item.addEventListener('click', () => openLightbox(index));
+                        });
+                    }, 100);
+                }
+
+                // Pagination (Prev / Next)
+                const currentIndex = portfolioProjects.findIndex(p => p.slug === slug);
+                
+                // Next
+                const nextIndex = (currentIndex + 1) % portfolioProjects.length;
+                const nextProject = portfolioProjects[nextIndex];
+                const nextLink = document.getElementById('next-project-link');
+                const nextTitle = document.getElementById('next-project-title');
+                if (nextLink) nextLink.href = `project.html?s=${nextProject.slug}`;
+                if (nextTitle) nextTitle.innerText = nextProject.title;
+
+                // Prev
+                const prevIndex = (currentIndex - 1 + portfolioProjects.length) % portfolioProjects.length;
+                const prevProject = portfolioProjects[prevIndex];
+                const prevLink = document.getElementById('prev-project-link');
+                const prevTitle = document.getElementById('prev-project-title');
+                if (prevLink) prevLink.href = `project.html?s=${prevProject.slug}`;
+                if (prevTitle) prevTitle.innerText = prevProject.title;
+                
+                // Re-check reveal for new elements
+                setTimeout(checkReveal, 100);
+            }
+
+            // --- Lightbox Logic ---
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            const lightboxClose = document.querySelector('.lightbox-close');
+            const lightboxPrev = document.querySelector('.lightbox-prev');
+            const lightboxNext = document.querySelector('.lightbox-next');
+            const lightboxDots = document.getElementById('lightbox-dots');
+
+            let currentImageIndex = 0;
+            let allProjectImages = [];
+
+            function openLightbox(index) {
+                currentImageIndex = index;
+                createDots();
+                updateLightboxImage();
+                lightbox.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeLightbox() {
+                lightbox.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            function createDots() {
+                if (!lightboxDots) return;
+                lightboxDots.innerHTML = '';
+                allProjectImages.forEach((_, i) => {
+                    const dot = document.createElement('div');
+                    dot.classList.add('dot');
+                    if (i === currentImageIndex) dot.classList.add('active');
+                    dot.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        currentImageIndex = i;
+                        updateLightboxImage();
+                    });
+                    lightboxDots.appendChild(dot);
+                });
+            }
+
+            function updateLightboxImage() {
+                if (!allProjectImages[currentImageIndex]) return;
+                lightboxImg.src = allProjectImages[currentImageIndex];
+                
+                // Update dots
+                const dots = document.querySelectorAll('.dot');
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === currentImageIndex);
+                });
+            }
+
+            function nextImage() {
+                currentImageIndex = (currentImageIndex + 1) % allProjectImages.length;
+                updateLightboxImage();
+            }
+
+            function prevImage() {
+                currentImageIndex = (currentImageIndex - 1 + allProjectImages.length) % allProjectImages.length;
+                updateLightboxImage();
+            }
+
+            if (lightboxClose) lightboxClose.addEventListener('click', (e) => { e.stopPropagation(); closeLightbox(); });
+            if (lightboxNext) lightboxNext.addEventListener('click', (e) => { e.stopPropagation(); nextImage(); });
+            if (lightboxPrev) lightboxPrev.addEventListener('click', (e) => { e.stopPropagation(); prevImage(); });
+            if (lightbox) lightbox.addEventListener('click', closeLightbox);
+            if (lightboxImg) lightboxImg.addEventListener('click', (e) => e.stopPropagation());
+
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (!lightbox.classList.contains('active')) return;
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowRight') nextImage();
+                if (e.key === 'ArrowLeft') prevImage();
+            });
+
+            // Initial load
+            updateProjectContent(currentLang);
+
+            // Listen for language changes by checking the currentLang variable 
+            // from script.js periodically or via a custom event
+            // Since we reused script.js, we can hook into the switch change
+            const switches = document.querySelectorAll('.lang-switch-checkbox');
+            switches.forEach(sw => {
+                sw.addEventListener('change', (e) => {
+                    const newLang = e.target.checked ? 'en' : 'tr';
+                    updateProjectContent(newLang);
+                });
+            });
+
+            // Parallax effect for hero image
+            window.addEventListener('scroll', () => {
+                const heroImg = document.getElementById('p-hero-image');
+                if (heroImg) {
+                    const scroll = window.scrollY;
+                    heroImg.style.transform = `translateY(${scroll * 0.1}px) scale(${1 + scroll * 0.0002})`;
+                }
+            });
+            
+            // "Clean" URL attempt (Visual only, will 404 on real refresh if no server config)
+            // history.replaceState(null, '', `projects/${slug}`); 
+            // Commenting out to ensure the site remains functional locally without server config.
+        });
+    </script>
+</body>
+
+</html>

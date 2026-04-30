@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Paneli | Proje Yönetimi</title>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <style>
+        :root {
+            --bg: #050505;
+            --card: #111;
+            --text: #fff;
+            --accent: #fff;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Clash Display', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 40px;
+        }
+
+        .admin-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-weight: 500;
+            letter-spacing: -1px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text);
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: var(--text);
+            color: var(--bg);
+        }
+
+        .btn.primary {
+            background: var(--text);
+            color: var(--bg);
+        }
+
+        .project-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .project-item {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border);
+        }
+
+        .project-info h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .project-info p {
+            margin: 5px 0 0;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            background: var(--card);
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .form-group.full {
+            grid-column: span 2;
+        }
+
+        label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.6;
+        }
+
+        input, textarea {
+            background: #000;
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 8px;
+            color: #fff;
+            font-family: inherit;
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        /* Output Area */
+        .output-section {
+            margin-top: 60px;
+            padding: 30px;
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        pre {
+            background: #0a0a0a;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 12px;
+            max-height: 300px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .success-toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #fff;
+            color: #000;
+            padding: 15px 30px;
+            border-radius: 50px;
+            display: none;
+            z-index: 10000;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .drag-handle {
+            cursor: grab;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            margin-right: 15px;
+            transition: color 0.3s;
+        }
+        .drag-handle:active { cursor: grabbing; }
+        .drag-handle:hover { color: var(--text); }
+        .sortable-ghost {
+            opacity: 0.4;
+            background: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100px); }
+            to { transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <header>
+            <h1>Proje Yönetimi</h1>
+            <div class="actions">
+                <button class="btn primary" onclick="openModal()"><i class="ph ph-plus"></i> Yeni Proje Ekle</button>
+            </div>
+        </header>
+
+        <div id="project-list" class="project-list">
+            <!-- Projects will be listed here -->
+        </div>
+
+        <div class="output-section">
+            <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="font-weight: 500; margin: 0;">Güncel Kod</h2>
+                <button class="btn" onclick="copyCode()"><i class="ph ph-copy"></i> Kodu Kopyala</button>
+            </div>
+            <p style="color: rgba(255,255,255,0.4); font-size: 0.85rem; margin-bottom: 15px;">
+                Aşağıdaki kodu kopyalayıp <b>js/projects-data.js</b> dosyasının tamamını silerek içine yapıştırın.
+            </p>
+            <pre id="output-code"></pre>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="project-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 id="modal-title" style="margin-top: 0; margin-bottom: 30px;">Yeni Proje</h2>
+            <form id="project-form">
+                <input type="hidden" id="edit-index" value="-1">
+                <div class="form-grid">
+                    <!-- 1. SLUG -->
+                    <div class="form-group full">
+                        <label>Proje Slug (URL için benzersiz ad)</label>
+                        <input type="text" id="slug" placeholder="ornek-proje" required>
+                    </div>
+
+                    <!-- 2. PROJECT TITLE (Single) -->
+                    <div class="form-group full">
+                        <label>Proje Başlığı (Marka İsmi)</label>
+                        <input type="text" id="title" placeholder="Marka Adı" required>
+                    </div>
+
+                    <!-- 3. DESCRIPTION (TR & EN Side by Side) -->
+                    <div class="form-group">
+                        <label>Detaylı Açıklama (TR)</label>
+                        <textarea id="desc-tr" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Detaylı Açıklama (EN)</label>
+                        <textarea id="desc-en" required></textarea>
+                    </div>
+
+                    <!-- 4. WORK DONE / CATEGORY (TR & EN Side by Side) -->
+                    <div class="form-group">
+                        <label>Yapılan İş / Hizmetler (TR)</label>
+                        <input type="text" id="cat-tr" placeholder="MARKA KİMLİĞİ - WEB TASARIM" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Yapılan İş / Hizmetler (EN)</label>
+                        <input type="text" id="cat-en" placeholder="BRANDING - WEB DESIGN" required>
+                    </div>
+
+                    <!-- 6. IMAGES (Automated) -->
+                    <div class="form-group full">
+                        <label>Galeri Görselleri (Sadece dosya adlarını virgülle ayırın)</label>
+                        <textarea id="images" placeholder="1.jpg, 2.jpg, 3.jpg"></textarea>
+                        <small style="opacity:0.5; font-size:10px; margin-top:5px;">
+                            Sistem otomatik olarak <b>assets/images/[SLUG]/</b> yolunu kullanacaktır.<br>
+                            Kapak resmi otomatik olarak <b>1.jpg</b> seçilecektir.
+                        </small>
+                    </div>
+
+                    <!-- 7. FEATURED -->
+                    <div class="form-group full" style="flex-direction: row; align-items: center; gap: 10px; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px;">
+                        <input type="checkbox" id="is-featured" style="width: 20px; height: 20px; cursor: pointer;">
+                        <label style="margin: 0; cursor: pointer; font-size: 14px;" for="is-featured">BU PROJEYİ ÖNE ÇIKANLARA (SLIDER) EKLE</label>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn" onclick="closeModal()">İPTAL</button>
+                    <button type="submit" class="btn primary">PROJEYİ KAYDET</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast" class="success-toast">Kod panoya kopyalandı!</div>
+
+    <!-- Load existing data -->
+    <script src="js/projects-data.js"></script>
+    <script>
+        let localProjects = [...window.portfolioProjects];
+
+        function renderList() {
+            const list = document.getElementById('project-list');
+            list.innerHTML = '';
+            
+            const displayList = [...localProjects].reverse();
+            
+            displayList.forEach((p, index) => {
+                const actualIndex = localProjects.length - 1 - index;
+                const item = document.createElement('div');
+                item.className = 'project-item';
+                item.setAttribute('data-id', actualIndex);
+                item.innerHTML = `
+                    <div class="drag-handle">
+                        <i class="ph ph-dots-six-vertical"></i>
+                    </div>
+                    <div class="project-info">
+                        <h3 style="display: flex; align-items: center; gap: 10px;">
+                            ${p.isFeatured ? '<i class="ph-fill ph-star" style="color: #FFD700; font-size: 1.1rem;"></i>' : ''}
+                            ${p.title}
+                        </h3>
+                        <p>${p.category ? p.category.tr : ''}</p>
+                    </div>
+                    <div class="actions">
+                        <button class="btn" onclick="editProject(${actualIndex})"><i class="ph ph-pencil"></i> Düzenle</button>
+                        <button class="btn" onclick="deleteProject(${actualIndex})" style="color:#ff4444; border-color: rgba(255,68,68,0.2)"><i class="ph ph-trash"></i> Sil</button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+            
+            // Initialize Sortable
+            new Sortable(list, {
+                handle: '.drag-handle',
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                onEnd: function() {
+                    const items = list.querySelectorAll('.project-item');
+                    const newOrderSlugs = Array.from(items).map(el => {
+                        const idx = parseInt(el.getAttribute('data-id'));
+                        return localProjects[idx].slug;
+                    });
+                    
+                    // Rebuild localProjects based on NEW visual order
+                    // Since the visual order is reversed (newest first), 
+                    // we reverse the DOM order to get the array order.
+                    const reordered = newOrderSlugs.reverse().map(slug => 
+                        localProjects.find(p => p.slug === slug)
+                    );
+                    
+                    localProjects = reordered;
+                    renderList(); // Refresh to update indices
+                }
+            });
+
+            generateCode();
+        }
+
+        
+
+        // Helper: Remove path and return just filename
+        function cleanPath(path, slug) {
+            if (!path) return '';
+            // Remove full path including slug folder
+            return path.replace(`assets/images/${slug}/`, '').replace('assets/images/', '');
+        }
+
+        // Helper: Add path prefix with slug
+        function formatPath(filename, slug) {
+            if (!filename) return '';
+            const f = filename.trim();
+            if (f.startsWith('http') || f.startsWith('assets/')) return f;
+            return `assets/images/${slug}/${f}`;
+        }
+
+        function generateCode() {
+            const code = `const projects = ${JSON.stringify(localProjects, null, 4)};
+
+// Helper function to get project by slug
+function getProjectBySlug(slug) {
+    return projects.find(p => p.slug === slug);
+}
+
+// Export for use in other scripts
+window.portfolioProjects = projects;
+window.getProjectBySlug = getProjectBySlug;
+`;
+            document.getElementById('output-code').textContent = code;
+        }
+
+        function openModal(index = -1) {
+            const modal = document.getElementById('project-modal');
+            const form = document.getElementById('project-form');
+            document.getElementById('edit-index').value = index;
+
+            if (index > -1) {
+                const p = localProjects[index];
+                document.getElementById('modal-title').innerText = 'Projeyi Düzenle';
+                document.getElementById('slug').value = p.slug;
+                document.getElementById('title').value = p.title || '';
+                document.getElementById('desc-tr').value = p.description.tr;
+                document.getElementById('desc-en').value = p.description.en;
+                document.getElementById('cat-tr').value = p.category.tr;
+                document.getElementById('cat-en').value = p.category.en;
+                document.getElementById('images').value = p.images ? p.images.map(img => cleanPath(img, p.slug)).join(', ') : '';
+                document.getElementById('is-featured').checked = p.isFeatured || false;
+            } else {
+                document.getElementById('modal-title').innerText = 'Yeni Proje Ekle';
+                form.reset();
+                document.getElementById('is-featured').checked = false;
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('project-modal').style.display = 'none';
+        }
+
+        function editProject(index) {
+            openModal(index);
+        }
+
+        function deleteProject(index) {
+            if (confirm('Bu projeyi silmek istediğinize emin misiniz?')) {
+                localProjects.splice(index, 1);
+                renderList();
+            }
+        }
+
+        document.getElementById('project-form').onsubmit = (e) => {
+            e.preventDefault();
+            const index = parseInt(document.getElementById('edit-index').value);
+            
+            const slug = document.getElementById('slug').value;
+            const imagesList = document.getElementById('images').value.split(',')
+                .map(s => formatPath(s.trim(), slug))
+                .filter(s => s !== `assets/images/${slug}/` && s !== '');
+
+            const newProject = {
+                slug: slug,
+                title: document.getElementById('title').value,
+                description: {
+                    tr: document.getElementById('desc-tr').value,
+                    en: document.getElementById('desc-en').value
+                },
+                category: {
+                    tr: document.getElementById('cat-tr').value,
+                    en: document.getElementById('cat-en').value
+                },
+                isFeatured: document.getElementById('is-featured').checked,
+                coverImage: imagesList.length > 0 ? imagesList[0] : formatPath('1.jpg', slug),
+                images: imagesList,
+                // Simplified / Auto-filled fields
+                services: { tr: [], en: [] },
+                disciplines: []
+            };
+
+            if (index > -1) {
+                localProjects[index] = newProject;
+            } else {
+                localProjects.push(newProject);
+            }
+
+            closeModal();
+            renderList();
+            showToast('Proje başarıyla listeye eklendi! Aşağıdaki güncel kodu kopyalamayı unutmayın.');
+        };
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+
+        function copyCode() {
+            const code = document.getElementById('output-code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                showToast('Kod panoya kopyalandı! js/projects-data.js dosyasına yapıştırabilirsiniz.');
+            });
+        }
+
+        renderList();
+    </script>
+</body>
+
+</html>

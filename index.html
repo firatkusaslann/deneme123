@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolyo | Marka & Tasarım</title>
+    <meta name="description"
+        content="Marka odaklı tasarımlar, branding, logo, sosyal medya ve arayüz tasarımı portfolyosu.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/styles.css">
+    <meta name="google" content="notranslate">
+</head>
+
+<body>
+
+    <!-- WebGL Fluid Animasyon Kanvası -->
+    <canvas id="fluid-canvas"></canvas>
+
+    <nav id="navbar">
+        <div class="container nav-container">
+            <div class="nav-left">
+                <div class="logo">
+                    <img src="assets/icons/logo.svg" alt="Logo" width="32" height="32">
+                </div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home" data-i18n="navHome">Ana Sayfa</a></li>
+                <!-- <li><a href="#services" data-i18n="navServices">Hizmetler</a></li> -->
+                <li><a href="#projects" data-i18n="navPortfolio">Portfolyo</a></li>
+                <li><a href="#contact" data-i18n="navContact">İletişim</a></li>
+            </ul>
+            <div class="nav-right">
+                <!-- Desktop Controls (Hidden on Mobile) -->
+                <div class="desktop-controls">
+                    <!-- Dil Değiştirme Switch -->
+                    <div class="lang-switch-container">
+                        <input type="checkbox" id="lang-switch" class="lang-switch-checkbox">
+                        <label for="lang-switch" class="lang-switch-pill">
+                            <span class="lang-slider-bg"></span>
+                            <span class="lang-text-inside tr-text">TR</span>
+                            <span class="lang-text-inside en-text">EN</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Hamburger Menu Toggle (Mobile Only) -->
+                <button id="menu-toggle" class="menu-toggle" aria-label="Menü">
+                    <span class="menu-bar"></span>
+                    <span class="menu-bar"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu" class="mobile-menu">
+            <div class="mobile-menu-header">
+                <div class="logo">
+                    <img src="assets/icons/logo.svg" alt="Logo" width="32" height="32">
+                </div>
+            </div>
+            <div class="mobile-menu-inner">
+                <ul class="mobile-nav-links">
+                    <li style="--i:1"><a href="#home" data-i18n="navHome"><span>Ana Sayfa</span></a></li>
+                    <!-- <li style="--i:2"><a href="#services" data-i18n="navServices"><span>Hizmetler</span></a></li> -->
+                    <li style="--i:3"><a href="#projects" data-i18n="navPortfolio"><span>Portfolyo</span></a></li>
+                    <li style="--i:4"><a href="#contact" data-i18n="navContact"><span>İletişim</span></a></li>
+                </ul>
+            </div>
+
+            <!-- Bottom Controls -->
+            <div class="mobile-menu-controls">
+                <button id="theme-toggle-mobile" class="theme-toggle-mobile">
+                    <i class="ph ph-moon"></i>
+                </button>
+                <div class="lang-switch-container">
+                    <input type="checkbox" id="lang-switch-mobile" class="lang-switch-checkbox">
+                    <label for="lang-switch-mobile" class="lang-switch-pill">
+                        <span class="lang-slider-bg"></span>
+                        <span class="lang-text-inside tr-text">TR</span>
+                        <span class="lang-text-inside en-text">EN</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section id="home" class="hero-text-section">
+            <div class="container">
+                <h1 id="typing-heading">
+                    <span id="typing-content"></span>
+                </h1>
+                <div class="hero-btns" id="hero-btns">
+                    <a href="#projects" class="hero-btn primary" data-i18n="heroBtnPrimary">Projeleri İncele</a>
+                    <a href="#contact" class="hero-btn secondary" data-i18n="heroBtnSecondary">İletişime Geç</a>
+                </div>
+
+                <!-- Moved Tech Slider to Hero -->
+                <div class="hero-tech-slider tech-slider reveal">
+                    <div class="tech-grid">
+                        <!-- 1. Set (Orijinal) -->
+                        <div class="tech-item" data-label="Adobe CC"><i class="ph ph-palette"></i></div>
+                        <div class="tech-item" data-label="Figma"><i class="ph ph-figma-logo"></i></div>
+                        <div class="tech-item" data-label="After Effects"><i class="ph ph-video-camera"></i></div>
+                        <div class="tech-item" data-label="Blender"><i class="ph ph-cube"></i></div>
+                        <div class="tech-item" data-label="Midjourney"><i class="ph ph-magic-wand"></i></div>
+                        <div class="tech-item" data-label="ChatGPT"><i class="ph ph-cpu"></i></div>
+                        <div class="tech-item" data-label="Notion"><i class="ph ph-notebook"></i></div>
+
+                        <!-- 2. Set (Kopya) -->
+                        <div class="tech-item" data-label="Adobe CC"><i class="ph ph-palette"></i></div>
+                        <div class="tech-item" data-label="Figma"><i class="ph ph-figma-logo"></i></div>
+                        <div class="tech-item" data-label="After Effects"><i class="ph ph-video-camera"></i></div>
+                        <div class="tech-item" data-label="Blender"><i class="ph ph-cube"></i></div>
+                        <div class="tech-item" data-label="Midjourney"><i class="ph ph-magic-wand"></i></div>
+                        <div class="tech-item" data-label="ChatGPT"><i class="ph ph-cpu"></i></div>
+                        <div class="tech-item" data-label="Notion"><i class="ph ph-notebook"></i></div>
+
+                        <!-- 3. Set (Kopya - Kesintisiz Akış İçin) -->
+                        <div class="tech-item" data-label="Adobe CC"><i class="ph ph-palette"></i></div>
+                        <div class="tech-item" data-label="Figma"><i class="ph ph-figma-logo"></i></div>
+                        <div class="tech-item" data-label="After Effects"><i class="ph ph-video-camera"></i></div>
+                        <div class="tech-item" data-label="Blender"><i class="ph ph-cube"></i></div>
+                        <div class="tech-item" data-label="Midjourney"><i class="ph ph-magic-wand"></i></div>
+                        <div class="tech-item" data-label="ChatGPT"><i class="ph ph-cpu"></i></div>
+                        <div class="tech-item" data-label="Notion"><i class="ph ph-notebook"></i></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="showreel-video" class="showreel">
+            <div class="showreel-sticky">
+                <div class="showreel-video-container">
+                    <!-- #t=3 hilesi: Videonun 3. saniyesini zorla yükler ve siyah ekran yerine videonun ortalarından bir kareyi gösterir -->
+                    <video id="showreel-video-player" src="assets/videos/herovideo.mp4#t=3" muted loop playsinline preload="auto"></video>
+
+                    <!-- Sesi Aç / Kapat Butonu -->
+                    <button id="mute-btn" class="mute-btn" aria-label="Sesi Aç/Kapat">
+                        <i class="ph ph-speaker-slash"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="stats" class="stats">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-item reveal">
+                        <h3 class="stat-number"><span class="counter" data-target="300">0</span>+</h3>
+                        <p class="stat-label" data-i18n="statProjects">TAMAMLANAN PROJE</p>
+                    </div>
+                    <div class="stat-item reveal" style="transition-delay: 0.1s;">
+                        <h3 class="stat-number"><span class="counter" data-target="90">0</span>%</h3>
+                        <p class="stat-label" data-i18n="statSatisfaction">MEMNUNİYET</p>
+                    </div>
+                    <div class="stat-item reveal" style="transition-delay: 0.2s;">
+                        <h3 class="stat-number"><span class="counter" data-target="5">0</span>+</h3>
+                        <p class="stat-label" data-i18n="statExperience">DENEYİM</p>
+                    </div>
+                    <div class="stat-item reveal" style="transition-delay: 0.3s;">
+                        <h3 class="stat-number"><span class="counter" data-target="7">0</span>+</h3>
+                        <p class="stat-label" data-i18n="statCountries">ÜLKE</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- <section id="services" class="services">
+            <div class="container">
+                <h2 class="section-title reveal" data-i18n="servicesTitle">Size Hangi Alanlarda Hizmet Verebilirim?</h2>
+
+                <div class="services-list">
+                    <div class="service-item reveal">
+                        <div class="service-info">
+                            <span class="service-num">01</span>
+                            <h3 data-i18n="service1Title">Branding</h3>
+                        </div>
+                        <p class="service-desc" data-i18n="service1Desc">Markanızın kimliğini ve hikayesini dijital
+                            dünyada fark edilecek şekilde
+                            tasarlıyorum.</p>
+                        <i class="ph ph-arrow-right service-icon"></i>
+                    </div>
+
+                    <div class="service-item reveal">
+                        <div class="service-info">
+                            <span class="service-num">02</span>
+                            <h3 data-i18n="service2Title">UI / UX Design</h3>
+                        </div>
+                        <p class="service-desc" data-i18n="service2Desc">Kullanıcı dostu, estetik ve fonksiyonel dijital
+                            arayüzler ile deneyimi
+                            ön plana çıkarıyorum.</p>
+                        <i class="ph ph-arrow-right service-icon"></i>
+                    </div>
+
+                    <div class="service-item reveal">
+                        <div class="service-info">
+                            <span class="service-num">03</span>
+                            <h3 data-i18n="service4Title">Sosyal Medya</h3>
+                        </div>
+                        <p class="service-desc" data-i18n="service4Desc">Dijital varlığınızı güçlendirecek, stratejik ve
+                            görsel odaklı içerikler
+                            üretiyorum.</p>
+                        <i class="ph ph-arrow-right service-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </section> -->
+
+
+        <section id="projects" class="projects">
+            <div class="projects-header reveal">
+                <div class="container">
+                    <div class="projects-header-flex">
+                        <h2 class="section-title left-aligned" data-i18n="projectsTitle">Öne Çıkan Projeler</h2>
+                        <div class="slider-nav">
+                            <button id="prev-btn" class="slider-btn" aria-label="Geri"><i
+                                    class="ph ph-caret-left"></i></button>
+                            <div class="nav-divider"></div>
+                            <button id="next-btn" class="slider-btn" aria-label="İleri"><i
+                                    class="ph ph-caret-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="projects-slider-container" class="projects-slider reveal">
+                <!-- Dynamically injected by script.js -->
+            </div>
+        </section>
+
+
+        <section id="portfolio" class="portfolio">
+            <div class="container">
+                <h2 class="section-title reveal" data-i18n="portfolioTitle">Portfolyo</h2>
+                <div id="portfolio-grid-container" class="portfolio-grid reveal">
+                    <!-- Dynamically injected by script.js -->
+                </div>
+                <div class="portfolio-more reveal">
+                    <a href="#" id="load-more-btn" class="hero-btn btn-outline" data-i18n="loadMoreBtn">
+                        Daha Fazla Gör
+                        <i class="ph ph-caret-down"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="about">
+            <div class="container">
+                <div class="about-content reveal">
+                    <div class="about-image">
+                        <img src="assets/images/fk.jpg" alt="Fırat Kuşaslan">
+                    </div>
+                    <div class="about-text">
+                        <h2 class="section-title left-aligned" data-i18n="aboutTitle">Hakkımda</h2>
+                        <p data-i18n="aboutDesc1">Merhaba, ben Fırat Kuşaslan. 1998 yılında doğdum ve şu anda Denizli'de
+                            yaşıyorum. Yaklaşık 5 yıldır dijital dünyada yaratıcı çözümler üreten tutkulu bir
+                            tasarımcıyım.</p>
+                        <p data-i18n="aboutDesc2">Markaların hikayelerini estetik ve işlevsel tasarımlarla buluşturmayı,
+                            kullanıcı deneyimini her zaman ön planda tutmayı hedefliyorum. Her yeni projede sınırları
+                            zorlamayı ve yenilikçi yaklaşımlar denemeyi seviyorum.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact">
+            <div class="container">
+                <div class="contact-content reveal">
+                    <h2 class="section-title center" data-i18n="contactTitle">Projeniz Hakkında Konuşalım</h2>
+                    <p class="contact-desc" data-i18n="contactDesc">Direkt WhatsApp Aracılığı İle Hızlı İletişim
+                        Sağlayabilirsiniz.</p>
+                    <div class="contact-btn-wrapper">
+                        <a href="https://wa.me/905323871204?text=Merhaba%2C%20websitenizi%20inceledim.%20Projem%20hakk%C4%B1nda%20g%C3%B6r%C3%BC%C5%9Fmek%20istiyorum.%20M%C3%BCsait%20misiniz%3F"
+                            target="_blank" class="hero-btn secondary whatsapp-action-btn" data-i18n="contactBtn" id="contact-whatsapp-btn">
+                            <i class="ph ph-whatsapp-logo"></i>
+                            WhatsApp'a Git
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container footer-container">
+            <p data-i18n="footerText">&copy; Created by Fırat Kuşaslan - 2026 | Tüm hakları saklıdır.</p>
+            <div class="footer-links">
+                <a href="https://www.facebook.com/firatbuzz/" target="_blank">Facebook</a>
+                <span class="divider">|</span>
+                <a href="https://www.instagram.com/firatbuzz/" target="_blank">Instagram</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Fixed Action Buttons -->
+    <button id="theme-toggle-btn" class="theme-toggle" aria-label="Toggle Theme">
+        <i class="ph ph-moon"></i>
+    </button>
+    <!-- Scroll to Top Button -->
+    <button id="scroll-top-btn" class="scroll-top-btn" aria-label="Yukarı Çık">
+        <i class="ph ph-arrow-up"></i>
+    </button>
+    <!-- WhatsApp Button -->
+    <a href="https://wa.me/905323871204?text=Merhaba%2C%20websitenizi%20inceledim.%20Projem%20hakk%C4%B1nda%20g%C3%B6r%C3%BC%C5%9Fmek%20istiyorum.%20M%C3%BCsait%20misiniz%3F"
+        target="_blank" id="whatsapp-btn" class="whatsapp-btn" aria-label="WhatsApp İletişim">
+        <i class="ph-thin ph-whatsapp-logo"></i>
+    </a>
+
+    <!-- Pavel's fluid script bağımlılıklarını çözmek için (ga, dat.gui ve sahte butonlar) -->
+    <script>window.ga = function () { };</script>
+    <div style="display:none;">
+        <div class="promo"></div>
+        <div class="promo-close"></div>
+        <div id="apple_link"></div>
+        <div id="google_link"></div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
+    <script src="js/fluid.js"></script>
+
+    <!-- Lenis Smooth Scroll (Apple Tarzı Momentum) -->
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <!-- Project Data -->
+    <script src="js/projects-data.js"></script>
+    <!-- Kendi yazdığımız mantık scriptimiz -->
+    <script src="js/script.js"></script>
+</body>
+
+</html>
