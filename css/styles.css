@@ -1,0 +1,1936 @@
+:root {
+    /* Layout Variables */
+    --container-max: 1140px;
+    --side-padding: clamp(1.5rem, 5vw, 3rem);
+    --section-padding-v: clamp(4rem, 8vw, 7rem);
+
+    /* Dark Theme Defaults (Default State) */
+    --bg-primary: #050505;
+    --bg-secondary: #111111;
+    --card-bg: #111111;
+
+    --text-primary: #ffffff;
+    --text-secondary: #888888;
+    --text-muted: rgba(255, 255, 255, 0.6);
+
+    --border-color: rgba(255, 255, 255, 0.1);
+    --border-hover: rgba(255, 255, 255, 0.5);
+
+    --nav-bg: rgba(5, 5, 5, 0.5);
+
+    --btn-primary-bg: #ffffff;
+    --btn-primary-text: #000000;
+
+    --btn-secondary-bg: rgba(20, 20, 20, 0.4);
+    --btn-secondary-hover: rgba(10, 10, 10, 0.7);
+
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --glow-opacity: 1;
+    --overlay-gradient: rgba(0, 0, 0, 0.8);
+
+    /* Backwards compatibility for now */
+    --bg-color: var(--bg-primary);
+    --bg: var(--bg-primary);
+    --text: var(--text-primary);
+}
+
+/* Light Theme Overrides */
+[data-theme="light"] {
+    --bg-primary: #f5f5f5;
+    --bg-secondary: #ffffff;
+    --card-bg: #ffffff;
+
+    --text-primary: #111111;
+    --text-secondary: #555555;
+    --text-muted: rgba(0, 0, 0, 0.6);
+
+    --border-color: rgba(0, 0, 0, 0.1);
+    --border-hover: rgba(0, 0, 0, 0.3);
+
+    --nav-bg: rgba(250, 250, 250, 0.6);
+
+    --btn-primary-bg: #111111;
+    --btn-primary-text: #ffffff;
+
+    --btn-secondary-bg: rgba(240, 240, 240, 0.6);
+    --btn-secondary-hover: rgba(220, 220, 220, 0.8);
+
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --glow-opacity: 0.3;
+    --overlay-gradient: rgba(255, 255, 255, 0.9);
+
+    --bg-color: var(--bg-primary);
+    --bg: var(--bg-primary);
+    --text: var(--text-primary);
+}
+
+/* Light Theme: Lang Switch Refinement */
+[data-theme="light"] .lang-switch-pill {
+    box-shadow: none;
+}
+
+[data-theme="light"] .lang-switch-checkbox:not(:checked)~.lang-switch-pill .tr-text,
+[data-theme="light"] .lang-switch-checkbox:checked~.lang-switch-pill .en-text {
+    color: #444;
+    /* Biraz daha açık bir gri */
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) var(--bg-primary);
+}
+
+/* Lenis Smooth Scroll Setup */
+html.lenis {
+    height: auto;
+}
+
+.lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+    overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+    pointer-events: none;
+}
+
+/* Global transition for smooth theme change */
+body,
+.portfolio-item,
+.portfolio-image,
+.nav-container,
+.hero-btn,
+.hero-btn-outline,
+.btn-outline,
+.lang-switch-pill,
+.lang-text-inside,
+.lang-slider-bg {
+    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+/* Hamburger Menu Toggle */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    /* İki çizgi arası boşluk */
+    width: 30px;
+    height: 30px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 1100;
+    padding: 0;
+}
+
+.menu-bar {
+    width: 100%;
+    height: 1px;
+    background-color: var(--text-primary);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-origin: center;
+}
+
+.menu-toggle.active .menu-bar:nth-child(1) {
+    transform: translateY(4.5px) rotate(45deg);
+}
+
+.menu-toggle.active .menu-bar:nth-child(2) {
+    transform: translateY(-4.5px) rotate(-45deg);
+}
+
+/* Mobile Menu Overlay */
+.mobile-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+    /* Kapalıyken 0 */
+    background: var(--bg-secondary);
+    /* Temaya göre değişir */
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    /* İçerik taşmasını önler */
+    transition: height 1s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+    user-select: none;
+    /* Metin seçimini ve kopyalama mavisini engeller */
+}
+
+.mobile-menu.active {
+    height: 100vh;
+    height: 100dvh;
+    /* Modern tarayıcılarda URL barını hesaplar */
+    pointer-events: auto;
+}
+
+.mobile-menu-inner {
+    flex-grow: 1;
+    /* Ortalamayı iyileştirmek için alanı kapla */
+    width: 100%;
+    padding: 0 var(--side-padding);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    margin-top: 60px;
+    /* Logo için boşluk */
+}
+
+.mobile-menu-header {
+    position: absolute;
+    top: 1rem;
+    left: 5%;
+    opacity: 0;
+    transition: opacity 0.5s ease 0.2s;
+    /* Gecikme azaltıldı */
+}
+
+.mobile-menu.active .mobile-menu-header {
+    opacity: 1;
+}
+
+.mobile-menu.active .mobile-menu-inner {
+    opacity: 1;
+    transition-delay: 0.2s;
+    /* Arkaplan inmeye başlayınca hepsi gelsin */
+}
+
+.mobile-nav-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+.mobile-nav-links li {
+    width: 100%;
+    text-align: center;
+    padding: 1.2rem 0;
+    border-bottom: 1px solid var(--border-color);
+    /* Temaya uyumlu çizgi */
+    opacity: 0;
+    transform: translateY(12px);
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="light"] .mobile-nav-links li {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.mobile-nav-links li:last-child {
+    border-bottom: none;
+}
+
+.mobile-menu.active .mobile-nav-links li {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: calc(0.2s + (var(--i) * 0.08s));
+    /* Daha erken ve hızlı başlar */
+}
+
+.mobile-nav-links li a {
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    text-decoration: none;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    display: block;
+}
+
+.mobile-menu-controls {
+    position: absolute;
+    bottom: 50px;
+    /* Daha güvenli bir mesafe */
+    bottom: max(50px, env(safe-area-inset-bottom));
+    left: 0;
+    width: 100%;
+    padding: 0 var(--side-padding);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.6s ease;
+}
+
+.mobile-menu.active .mobile-menu-controls {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.5s;
+    /* Butonlar daha erken gelir */
+}
+
+/* Mobil Menü İçin Özel Dil Butonu Boyutlandırması */
+.mobile-menu .lang-switch-pill {
+    width: 135px;
+    /* Orantılı genişlik */
+    height: 46px;
+    /* Tema butonu ile aynı yükseklik */
+}
+
+.mobile-menu .lang-text-inside {
+    font-size: 0.9rem;
+    /* Daha dengeli yazı boyutu */
+}
+
+.mobile-menu .lang-slider-bg {
+    height: calc(100% - 8px);
+    top: 4px;
+    left: 4px;
+    width: calc(50% - 4px);
+}
+
+.theme-toggle-mobile {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+/* Theme toggle button (Fixed Bottom Left) */
+.theme-toggle {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 999;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.25s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.theme-toggle:hover {
+    background: var(--btn-secondary-hover);
+    border-color: var(--border-hover);
+    transform: translateY(-5px);
+}
+
+.theme-toggle i {
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    transition: color 0.25s ease;
+}
+
+/* Language Switch (Pill Style) */
+.lang-switch-container {
+    display: flex;
+    align-items: center;
+}
+
+.lang-switch-checkbox {
+    display: none;
+}
+
+.lang-switch-pill {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100px;
+    height: 34px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: background-color 0.25s ease, border-color 0.25s ease;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+.lang-slider-bg {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: calc(50% - 3px);
+    height: calc(100% - 6px);
+    background: var(--border-hover);
+    border-radius: 50px;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.25s ease;
+    z-index: 1;
+}
+
+.lang-text-inside {
+    position: relative;
+    flex: 1;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    z-index: 2;
+    user-select: none;
+    transition: color 0.3s ease;
+}
+
+/* Initial State (TR is active) */
+.tr-text {
+    color: var(--text-primary);
+}
+
+.en-text {
+    color: var(--text-muted);
+}
+
+/* When checked (EN is active) */
+.lang-switch-checkbox:checked~.lang-switch-pill .lang-slider-bg {
+    transform: translateX(100%);
+}
+
+.lang-switch-checkbox:checked~.lang-switch-pill .tr-text {
+    color: var(--text-muted);
+}
+
+.lang-switch-checkbox:checked~.lang-switch-pill .en-text {
+    color: var(--text-primary);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.container {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 0 var(--side-padding);
+    width: 100%;
+}
+
+html {
+    font-size: 92%;
+    /* Tüm siteyi %8 oranında küçülterek o ferah hissi sağlar */
+}
+
+body {
+    font-family: 'Clash Display', sans-serif;
+    background-color: transparent;
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+    position: relative;
+    /* pointer-events: none; -> Scroll ve tıklama pürüzleri için kaldırıldı */
+}
+
+html {
+    background-color: var(--bg-color);
+    /* Fallback */
+}
+
+/* İçeriklerin tıklanabilir olmaya devam etmesi için: */
+.nav-links,
+.btn,
+.hero-btn,
+.hero-btns,
+.service-item,
+.tech-item,
+.project-card,
+button,
+i,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+li,
+a,
+.logo,
+.portfolio-image,
+span {
+    pointer-events: auto;
+    -webkit-tap-highlight-color: transparent;
+    /* Mobil tıklama maviliğini kaldırır */
+}
+
+/* WebGL Fluid Arka Plan Kanvası */
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    pointer-events: auto;
+    /* Animasyon için fareyi algılar */
+    transition: filter 0.5s ease;
+}
+
+[data-theme="light"] canvas {
+    /* Karanlık arkaplanı beyaza çevirir, sıvı renklerini büyük ölçüde korur */
+    filter: invert(1) hue-rotate(180deg);
+}
+
+/* Fluid script'inin eklediği ayarlar menüsünü gizle */
+.dg.ac {
+    display: none !important;
+}
+
+/* Navigasyon (Menü) */
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    padding: 1.5rem 0;
+    background: transparent;
+}
+
+nav.nav-scrolled {
+    padding: 1rem 0;
+    background: rgba(5, 5, 5, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    /* Linklerin ortalanması için */
+    width: 100%;
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 0 var(--side-padding);
+}
+
+nav.nav-hidden {
+    transform: translateY(-100%);
+}
+
+
+
+.nav-left {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+}
+
+.nav-links {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+    /* Boşluk artırıldı */
+}
+
+.nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    padding: 0.5rem 0;
+    transition: all 0.3s ease;
+    display: block;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: var(--text-primary);
+}
+
+.social-links {
+    display: flex;
+    list-style: none;
+    gap: 1.5rem;
+}
+
+.social-links a {
+    color: var(--text-muted);
+    /* Daha açık bir gri */
+    text-decoration: none;
+    font-size: 1.35rem;
+    /* İkonlar için boyutu artırdık */
+    transition: color 0.3s ease, transform 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.social-links a:hover {
+    color: var(--text-primary);
+    transform: scale(1.1);
+}
+
+section {
+    padding: var(--section-padding-v) 0;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+h2 {
+    font-size: 2.2rem;
+    font-weight: 300;
+    margin-bottom: 1.5rem;
+    /* 2rem -> 1.5rem */
+    color: var(--text-secondary);
+}
+
+/* Yeni Hero Metin Bölümü */
+.hero-text-section {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12vh 10% 0;
+    /* Added top padding to lower the text */
+    z-index: 10;
+    position: relative;
+    gap: 2rem;
+}
+
+.hero-text-section h1 {
+    font-size: clamp(2rem, 4.5vw, 4.2rem);
+    /* Küçültüldü */
+    line-height: 1.1;
+    font-weight: 400;
+    text-align: center;
+    max-width: 1400px;
+    letter-spacing: -2px;
+}
+
+.hero-btns {
+    display: flex;
+    justify-content: center;
+    /* Butonları ortaladık */
+    gap: 1.5rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 1s ease, transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+    margin-top: 4rem;
+}
+
+.hero-btns.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.hero-btn {
+    padding: 0.8rem 2.2rem;
+    /* Daha kompakt hale getirildi */
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.hero-btn.primary {
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+}
+
+.hero-btn.secondary {
+    background: var(--btn-secondary-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid var(--border-hover);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.btn-outline:hover {
+    background: var(--text-primary);
+    color: var(--bg-primary);
+    border-color: var(--text-primary);
+}
+
+.btn-outline i {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+}
+
+
+.hero-btn.secondary:hover {
+    background: rgba(10, 10, 10, 0.7);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-5px);
+}
+
+.hero-btn:hover {
+    transform: translateY(-5px);
+}
+
+.hero-btn.primary:hover {
+    background: var(--text-muted);
+}
+
+.hero-btn.secondary:hover {
+    background: var(--btn-secondary-hover);
+    border-color: var(--border-hover);
+}
+
+.char {
+    opacity: 0;
+    display: inline-block;
+    filter: blur(4px);
+    /* Blur azaltıldı */
+    transform: translateY(5px);
+    /* Hareket azaltıldı */
+    transition: opacity 0.5s ease, filter 0.5s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: pre;
+    /* Boşlukların kaybolmaması için */
+}
+
+.char.visible {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+}
+
+/* Ana Sayfa (Showreel Video) */
+.showreel {
+    height: 100vh;
+    /* 200vh'den 100vh'ye düşürerek 'duraksama' hissini kaldırdık */
+    padding: 0;
+    display: block;
+    position: relative;
+}
+
+.showreel-sticky {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    /* Ekranda sabit duracak alan */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.showreel-video-container {
+    position: relative;
+    /* Butonun içine oturması için gerekli */
+    width: 50%;
+    /* İlk başta ekranda derli toplu durur */
+    max-width: 1400px;
+    border-radius: 0;
+    overflow: hidden;
+    /* Opacity için geçiş kalsın ama transform'u JS anlık yönetmeli */
+    transition: border-radius 1s ease, opacity 0.8s ease;
+    background: transparent;
+    /* Siyah arkaplanı kaldırdık ki videonun ilk karesi görünsün */
+    z-index: 2;
+    opacity: 0;
+    /* Başlangıçta gizli */
+}
+
+.showreel-video-container.visible-video {
+    opacity: 1;
+    /* Scroll ile görünür olacak */
+}
+
+
+
+#showreel-video-player {
+    width: 100%;
+    height: auto;
+    /* Videonun orijinal boyutunu/oranını (en-boy) korur, KESMEZ */
+    display: block;
+}
+
+/* Ses Açma/Kapatma Butonu (Glassmorphism) */
+.mute-btn {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--btn-secondary-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.mute-btn:hover {
+    background: var(--btn-secondary-hover);
+    transform: scale(1.1);
+    border-color: var(--border-hover);
+}
+
+/* Stats Section */
+.stats {
+    position: relative;
+    z-index: 10;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 3.2rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    line-height: 1;
+    font-feature-settings: "tnum";
+    font-variant-numeric: tabular-nums;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+/* Hizmetler Bölümü */
+.services {
+    /* Diğer sectionlar ile eşitlendi */
+    background-color: transparent;
+    position: relative;
+    z-index: 10;
+}
+
+.services .container {
+    max-width: 1100px;
+    /* Yatay genişliği daraltmak için eklendi */
+}
+
+.section-title {
+    font-size: 2.8rem;
+    /* Biraz büyütüldü */
+    line-height: 1.1;
+    margin-bottom: 3.5rem;
+    /* İçerikle olan mesafe eşitlendi */
+    color: var(--text-primary);
+    font-weight: 400;
+    letter-spacing: -2px;
+    text-align: left;
+}
+
+.services .section-title {
+    text-align: center;
+}
+
+.services-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.service-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2.2rem 1.5rem;
+    /* 3rem 2rem -> 2.2rem 1.5rem */
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid transparent;
+    /* Bottom border başlangıçta şeffaf */
+    transition: all 0.2s cubic-bezier(0.33, 1, 0.68, 1);
+    cursor: pointer;
+    position: relative;
+    width: 100%;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+}
+
+.service-item:last-child {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.service-info {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+    /* 4rem -> 2.5rem */
+    flex: 1;
+    transition: color 0.4s ease, transform 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.service-num {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    font-family: 'Clash Display', sans-serif;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+    /* Opacity geçişi yumuşatıldı */
+}
+
+.service-item h3 {
+    font-size: 2.2rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+    /* Başlangıçta daha sönük */
+    letter-spacing: -1px;
+    transition: color 0.3s ease;
+}
+
+.service-desc {
+    flex: 1.5;
+    font-size: 1rem;
+    /* 1.05rem -> 1rem */
+    color: var(--text-secondary);
+    max-width: 550px;
+    line-height: 1.6;
+    padding: 0 2rem;
+    transition: color 0.4s ease;
+    /* Daha yavaş ve temiz */
+}
+
+.service-icon {
+    font-size: 2rem;
+    color: var(--text-secondary);
+    opacity: 0.3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    transition: color 0.4s ease, opacity 0.4s ease, transform 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+/* Hover Efekti - Güçlendirilmiş ve Hızlı Maskeleme */
+.service-item:hover {
+    background: var(--btn-secondary-hover);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+}
+
+.service-item:hover .service-info {
+    transform: translateX(8px);
+    /* Daha da minimal ve sakin */
+}
+
+/* Açıklama yazıları sabit kalacak */
+
+.service-item:hover .service-icon {
+    transform: translateX(-8px);
+}
+
+.service-item:hover .service-num {
+    opacity: 1;
+}
+
+.service-item:hover .service-desc {
+    color: var(--text-primary);
+}
+
+.service-item:hover h3 {
+    color: var(--text-primary);
+    /* Hoverda parlar */
+}
+
+.service-item:hover .service-icon {
+    color: var(--text-primary);
+    opacity: 1;
+}
+
+/* Staggered Reveal Delays */
+.services-list .service-item:nth-child(1) {
+    transition-delay: 0.1s;
+}
+
+.services-list .service-item:nth-child(2) {
+    transition-delay: 0.2s;
+}
+
+.services-list .service-item:nth-child(3) {
+    transition-delay: 0.3s;
+}
+
+.services-list .service-item:nth-child(4) {
+    transition-delay: 0.4s;
+}
+
+/* About Section */
+.about {
+    position: relative;
+    z-index: 10;
+}
+
+.about-content {
+    display: flex;
+    align-items: center;
+    gap: 8rem;
+}
+
+.about-image {
+    flex: 0 0 40%;
+    aspect-ratio: 4 / 5;
+    border-radius: 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.about-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(1) contrast(1.15) brightness(1.05);
+    transition: filter 0.5s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.about-image:hover img {
+    filter: grayscale(1) contrast(1.25) brightness(1.1);
+    transform: scale(1.05);
+}
+
+.about-text {
+    flex: 1;
+}
+
+.about-text .section-title {
+    margin-bottom: 3.5rem;
+    /* Standart boşluk */
+}
+
+.about-text p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+}
+
+.about-text .hero-btn {
+    margin-top: 2rem;
+    display: inline-flex;
+}
+
+/* Footer */
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-container p {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.footer-links {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.footer-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: var(--text-primary);
+}
+
+.footer-links .divider {
+    color: var(--border-color);
+    font-size: 0.8rem;
+}
+
+footer {
+    padding: 3rem 0;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Başlangıç Animasyonları (Ana Sayfa) */
+.fade-in {
+    opacity: 0;
+    transform: translateY(40px);
+    animation: fadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.delay-1 {
+    animation-delay: 0.2s;
+}
+
+.delay-2 {
+    animation-delay: 0.4s;
+}
+
+.delay-3 {
+    animation-delay: 0.6s;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Scroll (Aşağı Kaydırma) Animasyonları */
+.reveal {
+    opacity: 0;
+    transform: translateY(60px);
+    transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Teknolojiler Bölümü */
+.tech-stack {
+    text-align: center;
+    position: relative;
+    z-index: 10;
+}
+
+.tech-stack .section-title {
+    max-width: 100%;
+    white-space: nowrap;
+    /* Tek satıra zorla */
+}
+
+.tech-slider {
+    overflow: hidden;
+    padding: 2rem 0;
+    width: 100%;
+    position: relative;
+    mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+}
+
+.tech-grid {
+    display: flex;
+    gap: 2rem;
+    width: max-content;
+    animation: marquee 40s linear infinite;
+    /* Hız bir tık yavaşlatıldı */
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-33.33%);
+    }
+
+    /* 3 set olduğu için 1/3 oranında kayar */
+}
+
+/* .tech-grid:hover {
+    animation-play-state: paused;
+} */
+
+.tech-item {
+    width: 80px;
+    /* 100px -> 80px */
+    height: 80px;
+    background: var(--btn-secondary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    overflow: hidden;
+}
+
+.tech-item i {
+    font-size: 1.8rem;
+    /* 2.2rem -> 1.8rem */
+    color: var(--text-secondary);
+    transition: all 0.4s ease;
+}
+
+.tech-item img {
+    width: 50%;
+    /* İkonlarla benzer boyutta durur */
+    height: auto;
+    filter: grayscale(1) opacity(0.5);
+    /* Varsayılan olarak sönük */
+    transition: all 0.4s ease;
+}
+
+/* Hover Parlama Efekti */
+.tech-item:hover {
+    background: var(--btn-secondary-hover);
+    border-color: var(--border-hover);
+    transform: translateY(-5px);
+    /* Reduced from -10px */
+    box-shadow: 0 0 30px var(--shadow-color);
+}
+
+.tech-item:hover i {
+    color: var(--text-primary);
+    transform: scale(1.1);
+}
+
+.tech-item:hover img {
+    filter: grayscale(0) opacity(1);
+    /* Hover'da renklenir ve parlar */
+    transform: scale(1.1);
+}
+
+/* Tooltip (Label) */
+.tech-item::after {
+    content: attr(data-label);
+    position: absolute;
+    bottom: -35px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    opacity: 0;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    letter-spacing: 1px;
+}
+
+.tech-item:hover::after {
+    opacity: 1;
+    bottom: -25px;
+}
+
+/* Projeler Bölümü */
+.projects {
+    /* Diğer sectionlar ile aynı dikey padding */
+    position: relative;
+    z-index: 10;
+}
+
+.projects-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3.5rem;
+}
+
+.projects-header-flex .section-title {
+    margin-bottom: 0;
+    /* Flex içinde dikey hizalama için sıfırlandı */
+}
+
+.slider-nav {
+    display: flex;
+    align-items: center;
+    background: var(--btn-secondary-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: 50px;
+    padding: 4px;
+}
+
+.slider-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    font-size: 1.1rem;
+}
+
+.slider-btn:hover {
+    background: var(--btn-secondary-hover);
+    color: var(--text-primary);
+}
+
+.nav-divider {
+    width: 1px;
+    height: 18px;
+    background: var(--border-color);
+    margin: 0 2px;
+}
+
+.section-title.left-aligned {
+    text-align: left;
+    color: var(--text-primary);
+}
+
+.projects-slider {
+    display: flex;
+    gap: 3rem;
+    overflow-x: auto;
+    width: 100%;
+    /* JS (alignSliderToContainer) ile dinamik olarak güncellenir */
+    padding-left: var(--side-padding);
+    padding-right: var(--side-padding);
+    padding-bottom: 60px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-behavior: smooth;
+}
+
+.projects-slider::-webkit-scrollbar {
+    display: none;
+}
+
+.project-card {
+    flex: 0 0 32vw;
+    aspect-ratio: 1080 / 1350;
+    /* Yeni portrait format */
+    height: auto;
+    background: var(--card-bg);
+    border-radius: 0;
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: default;
+    user-select: none;
+}
+
+.spacer {
+    flex: 0 0 5%;
+    /* Sağda bitiş boşluğu */
+}
+
+.project-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+    /* Mouse olaylarının slider'a geçmesini sağlar */
+}
+
+.project-card:hover img {
+    transform: scale(1.05);
+}
+
+.project-card:hover img {
+    transform: scale(1.05);
+}
+
+/* Özel İmleç (Antigravity Tarzı - İçeride Hapsedilmiş) */
+.project-cursor-inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 15px 30px;
+    background: #ffffff !important;
+    /* Her zaman beyaz */
+    color: #000000 !important;
+    /* Her zaman siyah */
+    border-radius: 100px;
+    font-size: 1rem;
+    font-weight: 500;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0);
+    transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
+    box-shadow: 0 10px 40px var(--shadow-color);
+}
+
+.project-card:hover .project-cursor-inner {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+
+.portfolio {
+    position: relative;
+    z-index: 10;
+}
+
+/* Portfolyo Grid Bölümü */
+.portfolio .container {
+    max-width: 1400px;
+    /* Portfolyo için biraz daha geniş alan (1280'den 1400'e) */
+}
+
+.portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3.5rem 1.5rem;
+    /* 3 sütun yapılarak kartlar küçültüldü */
+}
+
+.portfolio-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    /* Resim ile yazı arası mesafe kısaltıldı */
+}
+
+.portfolio-item.hidden-project {
+    display: none;
+}
+
+.portfolio-item.project-visible {
+    display: flex;
+    animation: fadeInScale 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.portfolio-image {
+    width: 100%;
+    aspect-ratio: 1080 / 1350;
+    border-radius: 0;
+    overflow: hidden;
+    background: var(--card-bg);
+}
+
+.portfolio-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Sadece görsele girince tetiklenen efektler */
+.portfolio-image:hover img {
+    transform: scale(1.05);
+}
+
+.portfolio-image:hover~.portfolio-info .portfolio-title {
+    color: var(--text-primary);
+    opacity: 1;
+}
+
+.portfolio-image:hover~.portfolio-info .portfolio-category {
+    color: var(--text-primary);
+    opacity: 0.9;
+}
+
+.portfolio-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    /* Mesafe kısaltıldı */
+    pointer-events: auto;
+}
+
+.portfolio-category {
+    font-size: 0.7rem;
+    /* Bir tık daha küçüldü */
+    color: var(--text-primary);
+    opacity: 0.5;
+    letter-spacing: 1px;
+    font-weight: 500;
+    transition: all 0.4s ease;
+}
+
+.portfolio-title {
+    font-size: 1.25rem;
+    /* 1.6rem -> 1.25rem */
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    color: var(--text-primary);
+    opacity: 0.7;
+    transition: all 0.4s ease;
+}
+
+.portfolio-image {
+    width: 100%;
+    aspect-ratio: 1080 / 1350;
+    border-radius: 0;
+    overflow: hidden;
+    background: var(--card-bg);
+    position: relative;
+    /* İçerideki imleç için */
+}
+
+.portfolio .container {
+    max-width: 1400px;
+    /* Portfolyo için biraz daha geniş alan (1280'den 1400'e) */
+}
+
+.portfolio-more {
+    margin-top: 4rem;
+    display: flex;
+    justify-content: center;
+}
+
+/* Scroll to Top Button (Fixed Right, Above WhatsApp) */
+.scroll-top-btn {
+    position: fixed;
+    bottom: 86px;
+    right: 30px;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(20px);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.scroll-top-btn.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.scroll-top-btn:hover {
+    background: var(--btn-secondary-hover);
+    border-color: var(--border-hover);
+    transform: translateY(-5px);
+}
+
+/* WhatsApp Button (Fixed Bottom Right) */
+.whatsapp-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    cursor: pointer;
+    z-index: 999;
+    transition: background-color 0.25s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+}
+
+.whatsapp-btn:hover {
+    background: var(--btn-secondary-hover);
+    border-color: var(--border-hover);
+    transform: translateY(-5px);
+}
+
+/* Responsive Breakpoint Sistemi */
+
+/* 1536px ve Üzeri (Large Desktop) */
+@media (min-width: 1536px) {
+    .container {
+        max-width: 1400px;
+        /* Çok geniş ekranlarda bir tık daha açılabilir */
+    }
+}
+
+/* 1280px (Desktop / 15.6" Laptop Base) */
+@media (max-width: 1280px) {
+    .section-title {
+        font-size: 2.4rem;
+    }
+}
+
+/* 1024px (Tablet Landscape / Small Laptop) */
+@media (max-width: 1024px) {
+    .about-content {
+        flex-direction: column;
+        gap: 4rem;
+        text-align: center;
+    }
+
+    .about-image {
+        flex: 0 0 auto;
+        width: 100%;
+        max-width: 500px;
+    }
+
+    .about-text .section-title.left-aligned {
+        text-align: center;
+    }
+
+    .portfolio-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2.5rem 1.5rem;
+    }
+
+    .service-info {
+        gap: 2rem;
+    }
+}
+
+/* 768px (Tablet Portrait) */
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        row-gap: 4rem;
+    }
+
+    section {
+        padding: clamp(3rem, 6vw, 5rem) 0;
+    }
+
+    .stats {
+        padding: 10rem 0 !important;
+    }
+
+    .nav-container {
+        flex-direction: row;
+        padding: 0 5%;
+    }
+
+    nav {
+        padding: 1rem 0;
+    }
+
+    .menu-toggle {
+        display: flex;
+    }
+
+    .desktop-controls,
+    .theme-toggle {
+        display: none;
+    }
+
+    .nav-links {
+        display: none;
+    }
+
+    .hero-text-section {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .tech-grid {
+        gap: 1rem; /* Reduced gap for mobile */
+    }
+
+    .hero-text-section h1 {
+        font-size: 2.6rem;
+        max-width: 100%; /* Genişliği serbest bırak ki zorunlu kırpmalarımız çalışsın */
+    }
+
+
+
+    .hero-text-section .char {
+        display: inline; /* Mobilde kelimelerin doğru bölünmesi için inline yapıldı */
+    }
+
+    .hero-btns {
+        flex-direction: column;
+        width: 100%;
+        max-width: 320px;
+        margin: 3rem auto 0;
+        gap: 1rem;
+    }
+
+    .hero-btn {
+        width: 100%;
+        text-align: center;
+        padding: 1.2rem 2rem;
+    }
+
+    /* Mobilde yüzen balonları kaldır */
+    .project-cursor-inner,
+    .portfolio-cursor-inner {
+        display: none !important;
+    }
+
+    .portfolio-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .portfolio-more .hero-btn,
+    .whatsapp-action-btn {
+        width: auto !important; /* Tam genişliği iptal et ki ortalanabilsin */
+        padding: 1rem 2.5rem;
+    }
+
+    .service-item {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 2.5rem 1rem;
+    }
+
+    .service-desc {
+        padding: 0;
+        margin-top: 1rem;
+    }
+
+    .footer-container {
+        flex-direction: column;
+        gap: 1.5rem;
+        text-align: center;
+    }
+
+    .footer-links {
+        justify-content: center;
+    }
+
+    .showreel {
+        height: auto !important;
+        min-height: auto !important;
+    }
+
+    .showreel-sticky {
+        height: auto !important;
+        min-height: auto !important;
+        position: relative !important;
+        padding: 2rem 0;
+    }
+
+    .showreel-video-container {
+        width: 80% !important; /* Küçük hali biraz büyütüldü */
+        max-width: var(--container-max);
+        opacity: 1 !important; /* Opaklık geçişi kaldırıldı */
+        transition: none !important; /* Her türlü efekt (opacity/radius) devre dışı */
+    }
+
+    .projects-slider {
+        gap: 1.5rem; /* Reduced for mobile */
+        scroll-behavior: auto !important; /* JS ile çakışmayı (titremeyi) önlemek için */
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .project-card {
+        flex: 0 0 92%; /* Larger cards on mobile */
+        transform: translate3d(0,0,0); /* Donanım hızlandırması ile titremeyi önle */
+    }
+}
+
+/* 360px (Mobile Base) */
+@media (max-width: 360px) {
+
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-number {
+        font-size: 2.8rem;
+    }
+
+    .hero-text-section h1 {
+        font-size: 2rem;
+    }
+
+    .section-title {
+        font-size: 2.4rem;
+    }
+}
+
+/* Contact Section Styles */
+.contact {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 0 var(--side-padding);
+}
+
+.contact-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.contact-content .section-title {
+    margin-bottom: 1.2rem;
+    /* Başlık ve açıklama birbirine yaklaştırıldı */
+}
+
+.contact-desc {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: 3.5rem;
+    /* Buton biraz daha aşağı çekildi */
+}
+
+.whatsapp-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 1rem;
+    padding: 1rem 2.5rem;
+    background: var(--btn-secondary-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    color: var(--text-secondary);
+    /* Varsayılan gri */
+}
+
+.whatsapp-action-btn:hover {
+    background: var(--btn-secondary-hover);
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+    /* Hoverda beyaz */
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px var(--shadow-color);
+}
+
+.whatsapp-action-btn i {
+    font-size: 1.3rem;
+}
+
+.section-title.center {
+    text-align: center;
+}
+
+/* Global Font Size Adjustments */
+body {
+    font-size: 0.95rem;
+}
+
+p {
+    font-size: 1rem;
+}
+
+/* Hero Tech Slider Integration */
+.hero-tech-slider {
+    margin-top: 8rem;
+    /* Daha da aşağı alındı */
+    padding: 1.5rem 0 !important;
+    width: 100%;
+    max-width: var(--container-max);
+    margin-left: auto;
+    margin-right: auto;
+    mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+}
+
+.hero-tech-slider .tech-item {
+    width: 70px;
+    height: 70px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.hero-tech-slider .tech-item i {
+    font-size: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .hero-tech-slider {
+        margin-top: 4rem;
+    }
+
+    .hero-tech-slider .tech-item {
+        width: 60px;
+        height: 60px;
+    }
+}
+
+\
