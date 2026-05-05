@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Proje Detayı | Portfolyo</title>
+    <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&display=swap"
@@ -522,9 +523,9 @@
 
         <div id="mobile-menu" class="mobile-menu">
             <div class="mobile-menu-header">
-                <div class="logo">
+                <a href="index.html" class="logo">
                     <img src="assets/icons/logo.svg" alt="Logo" width="32" height="32">
-                </div>
+                </a>
             </div>
             <div class="mobile-menu-inner">
                 <ul class="mobile-nav-links">
@@ -666,7 +667,7 @@
 
             // Populate Content
             function updateProjectContent(lang) {
-                document.title = `${project.title} | Fırat Kuşaslan`;
+                document.title = `Fırat Kuşaslan | ${project.title}`;
                 
                 const pTitle = document.getElementById('p-title');
                 const pCategory = document.getElementById('p-category');
@@ -694,7 +695,7 @@
                         
                         galleryHTML += `
                             <div class="gallery-item ${revealClass}" ${style}>
-                                <img src="${img}" alt="${project.title}">
+                                <img src="${img}" alt="${project.title}" loading="lazy" decoding="async">
                             </div>
                         `;
                     });

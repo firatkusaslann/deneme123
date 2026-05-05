@@ -36,7 +36,7 @@
 
 /* Light Theme Overrides */
 [data-theme="light"] {
-    --bg-primary: #f5f5f5;
+    --bg-primary: #fafafa;
     --bg-secondary: #ffffff;
     --card-bg: #ffffff;
 
@@ -47,7 +47,7 @@
     --border-color: rgba(0, 0, 0, 0.1);
     --border-hover: rgba(0, 0, 0, 0.3);
 
-    --nav-bg: rgba(250, 250, 250, 0.6);
+    --nav-bg: rgba(255, 255, 255, 0.7);
 
     --btn-primary-bg: #111111;
     --btn-primary-text: #ffffff;
@@ -59,9 +59,13 @@
     --glow-opacity: 0.3;
     --overlay-gradient: rgba(255, 255, 255, 0.9);
 
-    --bg-color: var(--bg-primary);
     --bg: var(--bg-primary);
     --text: var(--text-primary);
+}
+
+/* Logo Theme Support */
+[data-theme="light"] .logo img {
+    filter: invert(1);
 }
 
 /* Light Theme: Lang Switch Refinement */
@@ -97,6 +101,18 @@
 * {
     scrollbar-width: thin;
     scrollbar-color: var(--border-color) var(--bg-primary);
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+img {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
 }
 
 /* Lenis Smooth Scroll Setup */
@@ -540,7 +556,7 @@ nav {
 
 nav.nav-scrolled {
     padding: 1rem 0;
-    background: rgba(5, 5, 5, 0.2);
+    background: var(--nav-bg);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
 }
@@ -774,8 +790,6 @@ h2 {
 }
 
 .showreel-sticky {
-    position: sticky;
-    top: 0;
     width: 100%;
     height: 100vh;
     /* Ekranda sabit duracak alan */
@@ -793,6 +807,8 @@ h2 {
     max-width: 1400px;
     border-radius: 0;
     overflow: hidden;
+    /* will-change: tarayıcıya bu elementin değişeceğini söyler ve GPU'yu hazırlar */
+    will-change: transform;
     /* Opacity için geçiş kalsın ama transform'u JS anlık yönetmeli */
     transition: border-radius 1s ease, opacity 0.8s ease;
     background: transparent;
@@ -1155,8 +1171,12 @@ footer {
 /* Scroll (Aşağı Kaydırma) Animasyonları */
 .reveal {
     opacity: 0;
-    transform: translateY(60px);
-    transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translateY(15px);
+    /* 'all' yerine sadece değişen özellikleri belirtmek çok daha hızlıdır */
+    transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    /* will-change tarayıcıyı önceden uyarır */
+    will-change: transform, opacity;
 }
 
 .reveal.active {
@@ -1348,7 +1368,7 @@ footer {
 .projects-slider {
     display: flex;
     gap: 3rem;
-    overflow-x: auto;
+    overflow-x: hidden;
     width: 100%;
     /* JS (alignSliderToContainer) ile dinamik olarak güncellenir */
     padding-left: var(--side-padding);

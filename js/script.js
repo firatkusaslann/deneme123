@@ -1,3 +1,9 @@
+// --- Global Scroll Reset ---
+if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+}
+window.scrollTo(0, 0);
+
 // --- Translations Dictionary ---
 const translations = {
     tr: {
@@ -22,7 +28,7 @@ const translations = {
         service4Desc: "Dijital varlığınızı güçlendirecek, stratejik ve görsel odaklı içerikler üretiyorum.",
         techTitle: "Üretkenliğimi Arttıran Teknolojiler",
         projectsTitle: "Öne Çıkan Projeler",
-        projectsCursor: "Projeyi İncele",
+        projectsCursor: "İncele",
         portfolioTitle: "Tüm İşlerime Göz Atın",
         aboutTitle: "Hakkımda",
         aboutDesc1: "Merhaba, ben Fırat Kuşaslan. 1998 yılında doğdum ve şu anda Denizli'de yaşıyorum. Yaklaşık 5 yıldır dijital dünyada yaratıcı çözümler üreten tutkulu bir tasarımcıyım.",
@@ -102,6 +108,14 @@ document.addEventListener('DOMContentLoaded', () => {
             icon.className = theme === 'light' ? 'ph ph-sun' : 'ph ph-moon';
         });
     }
+
+    // --- Disable Copying and Right Click (Global Policy) ---
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('copy', e => e.preventDefault());
+    document.addEventListener('cut', e => e.preventDefault());
+    document.addEventListener('dragstart', e => {
+        if (e.target.nodeName === 'IMG') e.preventDefault();
+    });
 
     function toggleTheme() {
         const currentTheme = document.documentElement.getAttribute('data-theme');
@@ -303,24 +317,21 @@ document.addEventListener('DOMContentLoaded', () => {
         lastScrollY = currentScrollY;
     });
 
-    // --- 2. Sayfayı Aşağı Kaydırdıkça Beliren Elementler (Scroll Reveal) ---
-    // Artık sadece section'ları değil, .reveal class'ı olan tüm elementleri hedefliyoruz
-    function checkReveal() {
-        const revealElements = document.querySelectorAll('.reveal');
-        const triggerBottom = window.innerHeight * 0.85;
-
-        revealElements.forEach(el => {
-            const elTop = el.getBoundingClientRect().top;
-            if (elTop < triggerBottom) {
+    // --- 2. Sayfayı Aşağı Kaydırdıkça Beliren Elementler (IntersectionObserver) ---
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const el = entry.target;
                 if (!el.classList.contains('active')) {
                     el.classList.add('active');
+                    
                     // Counter Animation Logic
                     const counters = el.querySelectorAll('.counter');
                     if (counters.length > 0) {
                         counters.forEach(counter => {
                             const target = +counter.getAttribute('data-target');
-                            const duration = 2000; // 2 seconds
-                            const increment = target / (duration / 16); // 60fps
+                            const duration = 2000;
+                            const increment = target / (duration / 16);
                             let current = 0;
 
                             const updateCounter = () => {
@@ -336,12 +347,22 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
                     }
                 }
+                // Bir kez çalıştıktan sonra izlemeyi bırakabiliriz (isteğe bağlı)
+                // revealObserver.unobserve(el);
             }
         });
+    }, {
+        threshold: 0.15 // Elementin %15'i göründüğünde tetikle
+    });
+
+    function initReveal() {
+        document.querySelectorAll('.reveal').forEach(el => {
+            revealObserver.observe(el);
+        });
     }
-    // İlk açılışta ve scroll yapıldığında kontrol et
-    checkReveal();
-    window.addEventListener('scroll', checkReveal);
+
+    // İlk açılışta izlemeyi başlat
+    initReveal();
 
     // --- 3. Hero Video Scroll & Visibility Interaction ---
     const videoContainer = document.querySelector('.showreel-video-container');
@@ -461,47 +482,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 6. Projeler Gelişmiş "Step" Momentum (One Card per Swipe) ---
+    // --- 6. Projeler Slider (GPU Hızlandırmalı Akışkan Slider) ---
     function initSliderMomentum() {
         const slider = document.querySelector('.projects-slider');
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
         if (!slider) return;
 
+        // Slider'ın içindeki tüm kartları saran bir div olmalı veya biz transformu slider'ın kendisine/içine uygularız.
+        // Mevcut yapıda slider'ın içindeki elementleri bir wrapper'a alabiliriz ama yapıyı bozmadan
+        // scrollLeft üzerinden devam edip LERP (Linear Interpolation) ile pürüzsüzleştirelim.
+        
+        let targetX = 0;
+        let currentX = 0;
         let isDragging = false;
-        let startX, scrollLeftAtStart;
-        let targetSnap = null;
+        let startX = 0;
+        let scrollLeftAtStart = 0;
+        let velocity = 0;
         let rafId;
-        let currentIndex = 0;
-
-        const momentumScroll = () => {
-            if (!isDragging && targetSnap !== null) {
-                const diff = targetSnap - slider.scrollLeft;
-                const lerpFactor = window.innerWidth < 768 ? 0.10 : 0.08;
-                slider.scrollLeft += diff * lerpFactor;
-
-                if (Math.abs(diff) < 0.5) {
-                    slider.scrollLeft = targetSnap;
-                    targetSnap = null;
-                    cancelAnimationFrame(rafId);
-                    return;
-                }
-                rafId = requestAnimationFrame(momentumScroll);
-            }
-        };
-
-        const updateSliderSnap = () => {
-            const cards = slider.querySelectorAll('.project-card');
-            if (cards.length === 0) return;
-            const sliderPadding = parseFloat(getComputedStyle(slider).paddingLeft);
-
-            if (currentIndex === cards.length - 1) {
-                targetSnap = slider.scrollWidth - slider.clientWidth;
-            } else {
-                targetSnap = cards[currentIndex].offsetLeft - sliderPadding;
-            }
-            rafId = requestAnimationFrame(momentumScroll);
-        };
 
         const alignSliderToContainer = () => {
             const title = document.querySelector('.projects-header .section-title');
@@ -513,94 +511,92 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
-        window.addEventListener('resize', () => {
-            alignSliderToContainer();
-            if (targetSnap !== null) updateSliderSnap();
-        });
-
+        window.addEventListener('resize', alignSliderToContainer);
         setTimeout(alignSliderToContainer, 100);
-        alignSliderToContainer();
 
-        const calculateTarget = (deltaX) => {
-            const threshold = window.innerWidth < 768 ? 50 : 100;
-            const cards = slider.querySelectorAll('.project-card');
-
-            if (deltaX < -threshold && currentIndex < cards.length - 1) {
-                currentIndex++;
-            } else if (deltaX > threshold && currentIndex > 0) {
-                currentIndex--;
+        const smoothScroll = () => {
+            if (isDragging) {
+                // Sürükleme anında yumuşak takip
+                currentX += (targetX - currentX) * 0.2;
+            } else {
+                // Bırakınca atalet (momentum)
+                currentX += velocity;
+                velocity *= 0.95; // Sürtünme
+                targetX = currentX;
             }
 
-            updateSliderSnap();
+            // Sınırları kontrol et
+            const maxScroll = slider.scrollWidth - slider.clientWidth;
+            if (currentX < 0) {
+                currentX = 0;
+                velocity = 0;
+            } else if (currentX > maxScroll) {
+                currentX = maxScroll;
+                velocity = 0;
+            }
+
+            slider.scrollLeft = currentX;
+
+            if (isDragging || Math.abs(velocity) > 0.1 || Math.abs(targetX - currentX) > 0.1) {
+                rafId = requestAnimationFrame(smoothScroll);
+            }
         };
 
         slider.addEventListener('mousedown', (e) => {
             isDragging = true;
             startX = e.pageX;
             scrollLeftAtStart = slider.scrollLeft;
-            cancelAnimationFrame(rafId);
+            targetX = scrollLeftAtStart;
+            currentX = scrollLeftAtStart;
+            velocity = 0;
             slider.style.cursor = 'grabbing';
-            slider.style.scrollBehavior = 'auto';
+            cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(smoothScroll);
         });
 
-        const endDragging = (e) => {
+        const endDragging = () => {
             if (!isDragging) return;
             isDragging = false;
             slider.style.cursor = 'grab';
-            const pageX = e.pageX || (e.changedTouches ? e.changedTouches[0].pageX : 0);
-            const deltaX = pageX - startX;
-            calculateTarget(deltaX);
         };
 
         slider.addEventListener('mouseleave', endDragging);
         slider.addEventListener('mouseup', endDragging);
+
         slider.addEventListener('mousemove', (e) => {
             if (!isDragging) return;
             e.preventDefault();
             const x = e.pageX;
-            const walk = (x - startX) * 1.2;
-            slider.scrollLeft = scrollLeftAtStart - walk;
+            const walk = (x - startX) * 1.5;
+            const prevTargetX = targetX;
+            targetX = scrollLeftAtStart - walk;
+            velocity = targetX - prevTargetX; // Hızı hesapla
         });
 
+        // Touch desteği
         slider.addEventListener('touchstart', (e) => {
             isDragging = true;
             startX = e.touches[0].pageX;
             scrollLeftAtStart = slider.scrollLeft;
+            targetX = scrollLeftAtStart;
+            currentX = scrollLeftAtStart;
+            velocity = 0;
             cancelAnimationFrame(rafId);
-            slider.style.scrollBehavior = 'auto';
+            rafId = requestAnimationFrame(smoothScroll);
         }, { passive: true });
 
         slider.addEventListener('touchmove', (e) => {
             if (!isDragging) return;
             const x = e.touches[0].pageX;
-            const walk = (x - startX) * 1.2;
-            slider.scrollLeft = scrollLeftAtStart - walk;
+            const walk = (x - startX) * 1.5;
+            const prevTargetX = targetX;
+            targetX = scrollLeftAtStart - walk;
+            velocity = targetX - prevTargetX;
         }, { passive: false });
 
-        slider.addEventListener('touchend', (e) => {
-            if (!isDragging) return;
-            isDragging = false;
-            const deltaX = e.changedTouches[0].pageX - startX;
-            calculateTarget(deltaX);
-        });
+        slider.addEventListener('touchend', endDragging);
 
-        if (prevBtn && nextBtn) {
-            prevBtn.onclick = () => {
-                cancelAnimationFrame(rafId);
-                if (currentIndex > 0) {
-                    currentIndex--;
-                    updateSliderSnap();
-                }
-            };
-            nextBtn.onclick = () => {
-                cancelAnimationFrame(rafId);
-                const cards = slider.querySelectorAll('.project-card');
-                if (currentIndex < cards.length - 1) {
-                    currentIndex++;
-                    updateSliderSnap();
-                }
-            };
-        }
+        // Butonlar kaldırıldı, sadece sürükleme aktif.
     }
 
     // --- 7. "Daha Fazla Gör" - Portfolyo Yükleme Mantığı ---
@@ -699,7 +695,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const featuredProjects = projectsToDisplay.filter(p => p.isFeatured);
             slider.innerHTML = featuredProjects.map(p => `
                 <div class="project-card" data-slug="${p.slug}">
-                    <img src="${p.coverImage}" alt="${p.title}">
+                    <img src="${p.coverImage}" alt="${p.title}" loading="lazy" decoding="async">
                     <div class="project-cursor-inner">${translations[currentLang].projectsCursor}</div>
                 </div>
             `).join('');
@@ -711,7 +707,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (grid) {
             grid.innerHTML = projectsToDisplay.map((p, index) => `
                 <div class="portfolio-item ${index >= 6 ? 'hidden-project' : 'project-visible'}" data-slug="${p.slug}">
-                    <div class="portfolio-image"><img src="${p.coverImage}" alt="${p.title}"></div>
+                    <div class="portfolio-image"><img src="${p.coverImage}" alt="${p.title}" loading="lazy" decoding="async"></div>
                     <div class="portfolio-info">
                         <h3 class="portfolio-title">${p.title.toUpperCase()}</h3>
                         <span class="portfolio-category">${p.category[currentLang]}</span>
@@ -729,4 +725,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderProjects();
     window.addEventListener('scroll', scrollSpy);
     scrollSpy();
+
+    // Re-init reveal observer after projects are rendered
+    setTimeout(initReveal, 100);
 });
